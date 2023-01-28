@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+    font-family: tajawal;
+    src: url("./assets/fonts/Tajawal-Light.ttf");
+    font-weight: 300;
+}
+@font-face {
+    font-family: tajawal;
+    src: url("./assets/fonts/Tajawal-Regular.ttf");
+}
+@font-face {
+    font-family: tajawal;
+    src: url("./assets/fonts/Tajawal-Medium.ttf");
+    font-weight: 500;
+}
+@font-face {
+    font-family: tajawal;
+    src: url("./assets/fonts/Tajawal-Bold.ttf");
+    font-weight: 700;
+}
+@font-face {
+    font-family: tajawal;
+    src: url("./assets/fonts/Tajawal-ExtraBold.ttf");
+    font-weight: 900;
+}
+
+* {
+    font-family: tajawal;
+}
+
+html {
+    direction: rtl;
+}
+
+body {
+    @apply bg-zinc-50;
+}
+
+// reset confelict of tailwind and ant
+// .ant-btn-primary {
+//     background-color: #1677ff;
+// }
+// .ant-btn-primary:not(:disabled):hover {
+//     background-color: #4096ff;
+// }
+.ant-btn-primary {
+    background-color: #6366f1;
+}
+.ant-btn-primary:not(:disabled):hover {
+    background-color: #9197ff;
+}
+.ant-btn-default {
+    background-color: #ffffff;
+}
+button img {
+    display: inline;
+}
+img, svg, video, canvas, audio, iframe, embed, object {
+    // display: block;
+     vertical-align: unset; 
+}
