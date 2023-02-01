@@ -8,83 +8,102 @@ export default abstract class Model {
     }
     abstract toDB(): { [key: string]: any };
     abstract toForm(): any;
+
+    private static async executeQuery(sql: string) {
+        try {
+            const db = await dbPromise;
+            console.log(sql);
+            const queryResult = await db.execute(sql);
+            queryResult.rowsAffected > 0 ? console.log('success') : console.log('fail');
+            return queryResult;
+        } catch (error) {
+            console.log(error);
+            message.error('Error check console log');
+        }
+    }
+
+    private static async selectQuery(sql: string) {
+        console.log(sql);
+        try {
+            const db = await dbPromise;
+            const queryResult = await db.select(sql);
+            return queryResult;
+        } catch (error) {
+            console.log(error);
+            message.error('Error check console log');
+        }
+    }
+
     async create() {
         // get data
         const data = this.toDB()
+        // remove any undefined value
+        for (let key in data) {
+            if (data[key] === undefined || data[key] === null) {
+                delete data[key];
+            }
+        }
         delete data.id;
         // create sql query
         let sql = `INSERT INTO ${this.tableName}`;
         const keys = Object.keys(data);
         const values = Object.values(data);
-        sql += ` (${keys.join(', ')}) VALUES (${values.join(', ')})`;
-        // try to execute query
-        try {
-            // connect to database
-            const db = await dbPromise;
-            const queryResult = await db.execute(sql);
-            queryResult.rowsAffected > 0 ? console.log('success') : console.log('fail');
-        } catch (error) {
-            // catch error
-            console.log(error);
-            message.error('Error check console log');
+        // round values with single quote
+        for (let i = 0; i < values.length; i++) {
+            values[i] = `'${values[i]}'`;
         }
+        sql += ` (${keys.join(', ')}) VALUES (${values.join(', ')})`;
+        return await Model.executeQuery(sql);
     }
     static async insert(models: Model[]) {
         const data = models.map(model => model.toDB());
+        // remove any undefined value
+        for (let row of data) {
+            for (let key in row) {
+                if (row[key] === undefined || row[key] === null) {
+                    delete row[key];
+                }
+            }
+        }
         data.forEach(row => delete row.id);
         let sql = `INSERT INTO ${this.getTableName()}`;
         const keys = Object.keys(data[0]);
         sql += ` (${keys.join(', ')}) VALUES `;
         const values = data.map((row) => {
+            // round values with single quote
+            for (let key in row) {
+                row[key] = `'${row[key]}'`;
+            }
             return `(${Object.values(row).join(', ')})`;
         });
         sql += values.join(', ');
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.execute(sql);
-            queryResult.rowsAffected === models.length ? console.log('success') : console.log('fail');
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+        return await Model.executeQuery(sql);
     }
     static async all(cols: string[] = ['*']) {
         let sql = `SELECT ${cols.join(', ')} FROM ${this.getTableName()}`;
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.select(sql);
-            return queryResult;
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+        return await Model.selectQuery(sql);
     }
     static async select(cols: string[], where?: string) {
         let sql = `SELECT ${cols.join(', ')} FROM ${this.getTableName()}`;
         if (where)
             sql += ` WHERE ${where}`;
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.select(sql);
-            return queryResult;
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+
+        return await Model.selectQuery(sql);
     }
     static async chunck(cols: string[], rate: number, currentPage: number, where?: string) {
         let sql = `SELECT ${cols.join(', ')} FROM ${this.getTableName()}`;
         if (where)
             sql += ` WHERE ${where}`;
         sql += ` LIMIT ${rate} OFFSET ${rate * (currentPage - 1)}`;
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.select(sql);
-            return queryResult;
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+
+        return await Model.selectQuery(sql);
+    }
+    static async count(where?: string) {
+        let sql = `SELECT COUNT(*) as count FROM ${this.getTableName()}`;
+        if (where)
+            sql += ` WHERE ${where}`;
+        const countPromise = await Model.selectQuery(sql) as [{ 'count': number }];
+        return countPromise[0].count;
     }
 
     async save() {
@@ -99,14 +118,7 @@ export default abstract class Model {
             sql += `, ${keys[i]} = ${values[i]}`;
         }
         sql += ` WHERE id = ${id}`;
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.execute(sql);
-            queryResult.rowsAffected > 0 ? console.log('success') : console.log('fail');
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+        return await Model.executeQuery(sql);
     }
     static async update(models: Model[], data: { [key: string]: any }) {
         const ids = models.map(model => model.toDB().id);
@@ -118,37 +130,19 @@ export default abstract class Model {
             sql += `, ${keys[i]} = ${values[i]}`;
         }
         sql += ` WHERE id IN (${ids.join(', ')})`;
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.execute(sql);
-            queryResult.rowsAffected === models.length ? console.log('success') : console.log('fail');
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+
+        return await Model.executeQuery(sql);
     }
     async delete() {
         const id = this.toDB().id;
         const sql = `DELETE FROM ${this.tableName} WHERE id = ${id}`;
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.execute(sql);
-            queryResult.rowsAffected > 0 ? console.log('success') : console.log('fail');
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+
+        return await Model.executeQuery(sql);
     }
     static async delete(models: Model[]) {
         const ids = models.map(model => model.toDB().id);
         const sql = `DELETE FROM ${this.getTableName()} WHERE id IN (${ids.join(', ')})`;
-        try {
-            const db = await dbPromise;
-            const queryResult = await db.execute(sql);
-            queryResult.rowsAffected === models.length ? console.log('success') : console.log('fail');
-        } catch (error) {
-            console.log(error);
-            message.error('Error check console log');
-        }
+
+        return await Model.executeQuery(sql);
     }
 }

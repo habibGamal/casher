@@ -18,8 +18,11 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = {version = "1.2", features = ["api-all"] }
 [dependencies.tauri-plugin-sql]
-git = "https://github.com/tauri-apps/tauri-plugin-sql"
-# tag = "v0.1.0" Not available yet
+#git = "https://github.com/tauri-apps/plugins-workspace"
+git = "https://github.com/habibGamal/plugins-workspace"
+#path = "../../plugins-workspace"
+#git = "https://github.com/tauri-apps/tauri-plugin-sql"
+#tag = "v0.1.0" #Not available yet
 features = ["mysql"] # or "postgres", or "mysql"
 
 [features]
