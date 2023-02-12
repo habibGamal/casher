@@ -2,30 +2,28 @@ import { Col, Modal, Row, message } from 'antd'
 import React, { useState } from 'react'
 import PageTitle from '../components/PageTitle'
 import TableController from '../components/TableController'
-import TableComponent from '../components/TableComponent'
 import useTableController from '../../hooks/useTableController'
 import useModal from '../../hooks/useModal'
-import AddProductTable from '../common/tables/AddProductTable'
-import Product from '../../app/models/Product'
+import ProductsTable from '../common/tables/ProductsTable'
+import ProductForm from '../common/forms/ProductForm'
+import OpeningStocksTable from '../common/tables/OpeningStocksTable'
+import OpeningStockForm from '../common/forms/OpeningStockForm'
 
 
 
-export default function AddProducts() {
+export default function OpeningStocks() {
     const { search, setSearch, attribute, setAttribute, searchMode, enterSearchMode, exitSearchMode } = useTableController('name');
-    const { open, setOpen, confirmLoading, setConfirmLoading, showModal, handleOk, handleCancel } = useModal()
-
+    const { open, confirmLoading, showModal, handleOk, handleCancel } = useModal()
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     return (
         <Row gutter={[0, 25]} className="m-8">
             <Col span="24">
-                <PageTitle name="أضافة الاصناف" />
-            </Col>
-            <Col span="24">
-                {/* <FormComponent /> */}
+                <PageTitle name="الارصدة الافتتاحية" />
             </Col>
             <Col span="24">
                 <Modal
-                    title="تعديل الصنف"
+                    title="اضافة رصيد افتتاحي للمنتج"
                     open={open}
                     onOk={handleOk}
                     footer={null}
@@ -34,13 +32,15 @@ export default function AddProducts() {
                     destroyOnClose={true}
                     width="90%"
                 >
-                    {/* <FormComponent /> */}
+                    <OpeningStockForm
+                        setRefresh={setRefresh}
+                    />
                 </Modal>
             </Col>
             <Col span="24">
                 <TableController
-                    addButtonText="أضافة صنف"
-                    addButtonAction={() => console.log('add')}
+                    addButtonText="اضافة رصيد افتتاحي"
+                    addButtonAction={showModal}
                     searchButtonAction={() => enterSearchMode()}
                     setSearch={setSearch}
                     setAttribute={setAttribute}
@@ -49,16 +49,18 @@ export default function AddProducts() {
                     defaultValue="name"
                     options={[
                         { label: 'اسم الصنف', value: 'name' },
-                        { label: 'السعر', value: 'product_price' },
-                        { label: 'الكمية', value: 'product_quantity' },
+                        { label: 'كود الصنف', value: 'barcode' },
+                        { label: 'المخزن', value: 'stock_id' },
                     ]}
                 />
             </Col>
             <Col span="24">
-                <AddProductTable
+                <OpeningStocksTable
                     searchMode={searchMode}
                     search={search}
                     attribute={attribute}
+                    refresh={refresh}
+                    setRefresh={setRefresh}
                 />
             </Col>
         </Row>

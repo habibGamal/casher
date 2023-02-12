@@ -1,4 +1,4 @@
-import { Select, Space } from 'antd';
+import { Checkbox, Radio, Select, Space, message } from 'antd';
 import {
   Button,
   Col,
@@ -9,6 +9,7 @@ import {
 } from 'antd';
 import React, { useState } from 'react';
 import ButtonSax from './ButtonSax';
+import Product from '../../app/models/Product';
 
 
 const { Option } = Select;
@@ -39,19 +40,17 @@ const formItemLayout = {
   },
 };
 
-const tailFormItemLayout = {
-  wrapperCol: {
-    span: 3,
-    offset: 0,
-  },
-};
 
 const FormComponent: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const onFinish = (values: any) => {
-
-    console.log('Received values of form: ', values);
+  const onFinish = async (values: any) => {
+    const product = new Product({ productForm: values })
+    const result = await product.create();
+    if (result && result.rowsAffected > 0) {
+      message.success('تم اضافة الصنف بنجاح')
+      form.resetFields();
+    }
   };
 
   return (
@@ -69,25 +68,22 @@ const FormComponent: React.FC = () => {
         <Col md={24} lg={12} xl={8}>
 
           <Form.Item
-            name="email"
+            name="name"
             label="أسم الصنف"
             rules={[
               {
-                type: 'email',
-                message: 'The input is not valid E-mail!',
-              },
-              {
                 required: true,
-                message: 'Please input your E-mail!',
+                message: 'هذا الحقل مطلوب',
               },
             ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            name="number"
-            label="رقم"
+            name="barcode"
+            label="كود الصنف"
             rules={[
+              { required: true, message: 'هذا الحقل مطلوب' },
               { pattern: new RegExp(/^[0-9]+$/), message: 'رقم الصنف يجب ان يكون ارقام فقط' },
             ]}
 
@@ -95,136 +91,63 @@ const FormComponent: React.FC = () => {
             <Input />
           </Form.Item>
 
-          <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
-            <Select
-              placeholder="Select a option and change input text above"
-              onChange={()=>{}}
-              allowClear
-            >
-              <Option value="male">male</Option>
+          <Form.Item name="product_group_id" initialValue={1} label="مجموعة الصنف" rules={[{ required: true, message: 'هذا الحقل مطلوب' }]}>
+            <Select>
+              <Option value={1}>غير مصنف</Option>
               <Option value="female">female</Option>
               <Option value="other">other</Option>
             </Select>
           </Form.Item>
-          <Form.Item
-            name="password"
-            label="سعر الصنف"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your password!',
-              },
-            ]}
-            hasFeedback
-          >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item
-            name="confirm"
-            label="كود الصنف"
-            dependencies={['password']}
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: 'Please confirm your password!',
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('The two passwords that you entered do not match!'));
-                },
-              }),
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item
-            name="fsfs"
-            label="مجموعة الصنف"
-            rules={[{ required: true, message: 'Please input your nickname!', whitespace: true }]}
-          >
-            <Input />
-          </Form.Item>
-
         </Col>
+
         <Col md={24} lg={12} xl={8}>
+
           <Form.Item
-            name="email"
+            name="buying_price"
             label="سعر الشراء"
             rules={[
-              {
-                type: 'email',
-                message: 'The input is not valid E-mail!',
-              },
-              {
-                required: true,
-                message: 'Please input your E-mail!',
-              },
+              { pattern: new RegExp(/^[0-9]+$/), message: 'رقم الصنف يجب ان يكون ارقام فقط' },
             ]}
           >
-            <Input />
+            <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
 
           <Form.Item
-            name="password"
+            name="selling_price"
             label="سعر البيع"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your password!',
-              },
-            ]}
-            hasFeedback
           >
-            <Input.Password />
+            <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
-
           <Form.Item
-            name="confirm"
-            label="الحد الادنى"
-            dependencies={['password']}
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: 'Please confirm your password!',
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('The two passwords that you entered do not match!'));
-                },
-              }),
-            ]}
+            name="minimum_stock"
+            label="الحد الادنى من المخزون"
           >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item
-            name="nickname"
-            label="الوزن"
-            tooltip="What do you want others to call you?"
-            rules={[{ required: true, message: 'Please input your nickname!', whitespace: true }]}
-          >
-            <Input />
+            <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
 
         </Col>
         <Col md={24} lg={12} xl={8}>
 
+          <Form.Item name="has_expire_date" initialValue={1} valuePropName="checked" >
+            <Checkbox >يمتلك صلاحية</Checkbox>
+          </Form.Item>
+
+          <Form.Item initialValue={0} name="unit_or_weight">
+            <Radio.Group>
+              <Radio.Button value={0}>وحدة</Radio.Button>
+              <Radio.Button value={1}>وزن</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+
           <Form.Item
-            name="phone"
-            label="الوحدة"
-            rules={[{ required: true, message: 'Please input your phone number!' }]}
+            name="unit"
+            label="اسم الوحدة"
+            initialValue="قطعة"
+            rules={[
+              { required: true, message: 'هذا الحقل مطلوب' },
+            ]}
           >
-            <Row>
+            {/* <Row>
               <Col span="18">
                 <Input style={{ width: '100%' }} />
               </Col>
@@ -232,25 +155,9 @@ const FormComponent: React.FC = () => {
               <Col span="4" offset={2}>
                 <ButtonSax icon="add" shape='circle' type='dashed' />
               </Col>
-            </Row>
-          </Form.Item>
-
-          <Form.Item
-            name="donation"
-            label="يمتلك صلاحية"
-            rules={[{ required: true, message: 'Please input donation amount!' }]}
-          >
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
-
-          <Form.Item
-            name="website"
-            label="تاريخ الصلاحية"
-            rules={[{ required: true, message: 'Please input website!' }]}
-          >
+            </Row> */}
             <Input />
           </Form.Item>
-
 
         </Col>
       </Row>
