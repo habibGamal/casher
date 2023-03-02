@@ -10,7 +10,7 @@ export default function ProductsInGroup() {
 
     return (
         <Row gutter={[0, 25]} className="m-8">
-            <Col span="24">
+            <Col span="24" className="isolate">
                 <TableController
                     searchButtonAction={() => enterSearchMode()}
                     setSearch={setSearch}
@@ -23,8 +23,6 @@ export default function ProductsInGroup() {
                         { label: 'كود الصنف', value: 'barcode' },
                     ]}
                 />
-            </Col>
-            <Col span="24">
                 <ProductsInGroupTable
                     searchMode={searchMode}
                     search={search}

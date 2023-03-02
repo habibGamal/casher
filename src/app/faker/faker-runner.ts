@@ -1,4 +1,6 @@
 import { productFactory } from "./product-factory";
-export default function fakerRunner(){
-    productFactory();
+import { productGroupFactory } from "./product-group-factory";
+export default async function fakerRunner() {
+  await productGroupFactory();
+  await productFactory();
 }

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS products (
     unit_or_weight BOOLEAN DEFAULT 0,
     unit VARCHAR(255) NOT NULL,
     product_group_id  INT UNSIGNED DEFAULT 1,
-    bigger_unit_id  INT UNSIGNED NULL,
     created_at DATETIME DEFAULT NOW(),
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (product_group_id) REFERENCES product_groups(id) ON DELETE SET NULL
 );

@@ -1,3 +1,3 @@
 import productSql from './product.sql?raw';
-
-export { productSql };
+import productGroupSql from './product_group.sql?raw';
+export { productSql,productGroupSql };

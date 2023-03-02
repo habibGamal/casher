@@ -5,8 +5,7 @@ export default function PageTitle({name}: {name: string}) {
     return (
         <Divider
             orientation="left"
-            className="font-bold before:bg-indigo-100 after:bg-indigo-100">
-            
+            className="font-bold before:bg-yellow-500 after:bg-yellow-500">
             {name}
         </Divider>
 

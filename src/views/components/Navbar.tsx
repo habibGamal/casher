@@ -37,7 +37,7 @@ export type MenuKeys =
   | "expired_products"
   | "openning_stock"
   | "add_stock"
-  | "stock_inventory"
+  | "tracking_stocks"
   | "stock_waste"
   | "stock_transfer"
   | "supporters"
@@ -63,7 +63,7 @@ const items: MenuProps["items"] = [
     <IconSax icon="stock" dir="custom" className="w-[24px]" />,
     [
       getItem("اضافة مخزن", "add_stock"),
-      getItem("جرد المخازن", "stock_inventory"),
+      getItem("جرد المخازن", "tracking_stocks"),
       getItem("الهالك", "stock_waste"),
       getItem("التحويل بين المخازن", "stock_transfer"),
     ]

@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Button, Modal, Space, Table, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import ProductGroup from "../../../app/models/ProductGroup";
+import Product from "../../../app/models/Product";
 import useModal from "../../../hooks/useModal";
+import ProductForm from "../forms/ProductForm";
 import useSortTable from "../../../hooks/useSortTable";
 import ProductService from "../../../app/services/ProductService";
 import useTablePagination from "../../../hooks/useTablePagination";
 import useWhileTyping from "../../../hooks/useWhileTyping";
 import { QueryResult } from "tauri-plugin-sql-api";
-import ProductGroupForm from "../forms/ProductGroupForm";
-import ProductsInGroup from "../../products/modals/ProductsInGroup";
-import ProductGroupService from "../../../app/services/ProductGroupService";
+import OpeningStockForm from "../forms/OpeningStockForm";
+import StockForm from "../forms/StockForm";
 
-interface ProductGroupsTableProps {
+interface StocksTableProps {
   searchMode: boolean;
   search: string;
   attribute: string;
@@ -21,61 +21,56 @@ interface ProductGroupsTableProps {
   setRefresh: (refresh: boolean) => void;
 }
 
-const ProductGroupsTable = ({
+const StocksTable = ({
   searchMode,
   search,
   attribute,
   refresh,
   setRefresh,
-}: ProductGroupsTableProps) => {
+}: StocksTableProps) => {
   const [loading, setLoading] = useState(false);
   const { tableParams, handleTableChange, resetPagination } =
-    useTablePagination<ProductGroup>();
-  const [data, setData] = useState<ProductGroup[]>([]);
+    useTablePagination<Product>();
+  const [data, setData] = useState<Product[]>([]);
   const [total, setTotal] = useState<number>(0);
-  const [productToEdit, setProductToEdit] = useState<ProductGroup | null>(null);
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null);
   const {
-    open: openEditForm,
-    closeModal: closeEditForm,
-    showModal: showEditForm,
-    handleCancel: handleCancelEditForm,
+    open,
+    closeModal,
+    confirmLoading,
+    showModal,
+    handleOk,
+    handleCancel,
   } = useModal();
-  const {
-    open: openProductsInGroup,
-    handleCancel: handleCancelProductsInGroup,
-    showModal: showProductsInGroupModal,
-  } = useModal();
-  const { getSortProps, sortDB, sortedInfo } = useSortTable<ProductGroup>();
+  const { getSortProps, sortDB, sortedInfo } = useSortTable<Product>();
 
-  const editModel = (product: ProductGroup) => {
+  const editModel = (product: Product) => {
     setProductToEdit(product);
-    showEditForm();
+    showModal();
   };
 
-  const showProductsInGroup = (id: number) => {
-    showProductsInGroupModal();
-  };
-
-  const columns: ColumnsType<ProductGroup> = [
+  const columns: ColumnsType<Product> = [
     {
-      title: "أسم المجموعة",
+      title: "أسم المخزن",
       dataIndex: "name",
       key: "name",
       ...getSortProps("name"),
     },
     {
-      title: "عدد الاصناف في المجموعة",
-      dataIndex: "productsCount",
-      key: "productsCount",
+      title: "المسؤول",
+      dataIndex: "barcode",
+      key: "barcode",
+    },
+    {
+      title: "المخزن يحتوي على بضائع",
+      dataIndex: "selling_price",
+      key: "selling_price",
     },
     {
       title: "تحكم",
       key: "control",
-      render: (record: ProductGroup) => (
+      render: (record: Product) => (
         <Space size="middle">
-          <Button onClick={() => showProductsInGroup(9)}>
-            عرض اصناف المجموعة
-          </Button>
           <Button
             type="primary"
             onClick={() => editModel(record)}
@@ -93,17 +88,17 @@ const ProductGroupsTable = ({
 
   const fetchData = async (search?: string) => {
     setLoading(true);
-    const { productGroups, count } = await ProductGroupService.getProductGroupsWithProductsCount(
+    const { products, count } = await ProductService.chunk(
       tableParams,
       sortDB(),
       search
     );
-    setData(productGroups);
+    setData(products);
     setTotal(count);
     setLoading(false);
   };
 
-  const handleDelete = async (product: ProductGroup) => {
+  const handleDelete = async (product: Product) => {
     const res = (await product.delete()) as QueryResult;
     if (res && res.rowsAffected === 1) {
       setRefresh(!refresh);
@@ -129,27 +124,19 @@ const ProductGroupsTable = ({
   return (
     <>
       <Modal
-        title="اصناف المجموعة"
-        open={openProductsInGroup}
-        onCancel={handleCancelProductsInGroup}
+        title="تعديل بيانات المخزن"
+        open={open}
+        onOk={handleOk}
         footer={null}
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
         destroyOnClose={true}
         width="90%"
       >
-        <ProductsInGroup />
-      </Modal>
-      <Modal
-        title="تعديل المجموعة"
-        open={openEditForm}
-        footer={null}
-        onCancel={handleCancelEditForm}
-        destroyOnClose={true}
-        width="90%"
-      >
-        {/* <ProductGroupForm
-          closeModal={closeEditForm}
+        <StockForm
+          closeModal={closeModal}
           modelToEdit={productToEdit || undefined}
-        /> */}
+        />
       </Modal>
       <Table
         columns={columns}
@@ -160,10 +147,9 @@ const ProductGroupsTable = ({
         bordered
         onChange={handleTableChange}
         footer={() => "عدد النتائج : " + total}
-        className="custom-table"
       />
     </>
   );
 };
 
-export default ProductGroupsTable;
+export default StocksTable;

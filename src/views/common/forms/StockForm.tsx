@@ -12,16 +12,12 @@ import SelectSearch, { SetOptions } from "../../components/SelectSearch";
 
 const { Option } = Select;
 
-interface OpeningStockFormProps {
+interface StockFormProps {
   modelToEdit?: Product;
   setRefresh?: React.Dispatch<React.SetStateAction<boolean>>;
   closeModal?: () => void;
 }
-const OpeningStockForm = ({
-  modelToEdit,
-  setRefresh,
-  closeModal,
-}: OpeningStockFormProps) => {
+const StockForm = ({ modelToEdit, setRefresh, closeModal }: StockFormProps) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const { setErrors, isError, getErrorMessage } = useFormError();
@@ -54,22 +50,7 @@ const OpeningStockForm = ({
     }
   };
 
-  const [codeOrName, setCodeOrName] = useState<"name" | "barcode">("name");
-
-  const onSearch = async (value: string, setOptions: SetOptions) => {
-    const res = (await Product.select(
-      ["id", codeOrName],
-      `${codeOrName} like '%${value}%'`
-    )) as ProductDB[];
-    const products = res.map((productDB) => new Product({ productDB }));
-
-    setOptions(
-      products.map((product) => ({
-        value: `${product.id!}`,
-        label: product[codeOrName]!,
-      }))
-    );
-  };
+  const onSearch = async (value: string, setOptions: SetOptions) => {};
   return (
     <Form
       form={form}
@@ -81,18 +62,10 @@ const OpeningStockForm = ({
       scrollToFirstError
     >
       <Row gutter={24} justify="center">
-        <Form.Item initialValue={"name"} name="name_or_code">
-          <Radio.Group onChange={(e) => setCodeOrName(e.target.value)}>
-            <Radio.Button value={"name"}>بحث بالاسم</Radio.Button>
-            <Radio.Button value={"barcode"}>بحث باكود</Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-      </Row>
-      <Row gutter={24} justify="center">
         <Col md={{ span: 24 }} lg={{ span: 12 }} xl={{ span: 8 }}>
           <Form.Item
-            name="product_id"
-            label="المنتج"
+            name="name"
+            label="اسم المخزن"
             rules={[
               {
                 required: true,
@@ -100,37 +73,13 @@ const OpeningStockForm = ({
               },
             ]}
           >
-            <SelectSearch onSearch={onSearch} placeholder="ابحث عن منتج" />
-          </Form.Item>
-          <Form.Item
-            name="expire_date"
-            label="تاريخ الصالحية"
-            rules={[
-              {
-                required: true,
-                message: "هذا الحقل مطلوب",
-              },
-            ]}
-          >
-            <DatePicker style={{ width: "100%" }} />
+            <Input />
           </Form.Item>
         </Col>
         <Col md={{ span: 24 }} lg={{ span: 12 }} xl={{ span: 8 }}>
           <Form.Item
-            name="stock_id"
-            initialValue={1}
-            label="المخزن"
-            rules={[{ required: true, message: "هذا الحقل مطلوب" }]}
-          >
-            <Select>
-              <Option value={1}>غير مصنف</Option>
-              <Option value="female">female</Option>
-              <Option value="other">other</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="quantity"
-            label="الكمية"
+            name="manager"
+            label="المسؤول"
             rules={[
               {
                 required: true,
@@ -138,7 +87,7 @@ const OpeningStockForm = ({
               },
             ]}
           >
-            <InputNumber min={0} style={{ width: "100%" }} />
+            <SelectSearch onSearch={onSearch} placeholder="بحث" />
           </Form.Item>
         </Col>
       </Row>
@@ -157,4 +106,4 @@ const OpeningStockForm = ({
   );
 };
 
-export default OpeningStockForm;
+export default StockForm;

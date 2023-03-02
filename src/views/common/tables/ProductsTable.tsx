@@ -40,7 +40,7 @@ const ProductsTable = ({
     handleOk,
     handleCancel,
   } = useModal();
-  const { getSortProps, sortDB, sortedInfo } = useSortTable<Product>();
+  const { getSortProps, sortDB, sortedInfo } = useSortTable<Product>('created_at');
 
   const editModel = (product: Product) => {
     setProductToEdit(product);
@@ -87,14 +87,9 @@ const ProductsTable = ({
       key: "unit",
     },
     {
-      title: "الوحدة الكبرى",
-      dataIndex: "bigger_unit_id",
-      key: "bigger_unit_id",
-    },
-    {
       title: "مجموعة الصنف",
-      dataIndex: "product_group_id",
-      key: "product_group_id",
+      dataIndex: "product_group_name",
+      key: "product_group_name",
     },
     {
       title: "تحكم",

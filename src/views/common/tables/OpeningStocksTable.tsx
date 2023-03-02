@@ -10,6 +10,7 @@ import ProductService from "../../../app/services/ProductService";
 import useTablePagination from "../../../hooks/useTablePagination";
 import useWhileTyping from "../../../hooks/useWhileTyping";
 import { QueryResult } from "tauri-plugin-sql-api";
+import OpeningStockForm from "../forms/OpeningStockForm";
 
 interface OpeningStocksTableProps {
   searchMode: boolean;
@@ -142,7 +143,7 @@ const OpeningStocksTable = ({
         destroyOnClose={true}
         width="90%"
       >
-        <ProductForm
+        <OpeningStockForm
           closeModal={closeModal}
           modelToEdit={productToEdit || undefined}
         />

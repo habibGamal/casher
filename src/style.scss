@@ -35,7 +35,7 @@ html {
 }
 
 body {
-    @apply bg-zinc-50;
+    @apply bg-zinc-100;
 }
 
 // reset confelict of tailwind and ant
@@ -46,10 +46,15 @@ body {
 //     background-color: #4096ff;
 // }
 .ant-btn-primary {
-    background-color: #6366f1;
+    // background-color: #6366f1;
+    background-color: #47388d;
+    box-shadow: none;
 }
+// .ant-btn-primary:not(:disabled):hover {
+//     background-color: #9197ff;
+// }
 .ant-btn-primary:not(:disabled):hover {
-    background-color: #9197ff;
+    background-color: #645699;
 }
 .ant-btn-default {
     background-color: #ffffff;
@@ -86,4 +91,9 @@ object {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+// table
+.isolate {
+    @apply p-6 bg-white border border-indigo-500 shadow-xl rounded-xl
 }

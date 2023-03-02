@@ -4,10 +4,10 @@ import PageTitle from "../components/PageTitle";
 import TableController from "../components/TableController";
 import useTableController from "../../hooks/useTableController";
 import useModal from "../../hooks/useModal";
-import OpeningStocksTable from "../common/tables/OpeningStocksTable";
-import OpeningStockForm from "../common/forms/OpeningStockForm";
+import StockForm from "../common/forms/StockForm";
+import StocksTable from "../common/tables/StocksTable";
 
-export default function OpeningStocks() {
+export default function Stocks() {
   const {
     search,
     setSearch,
@@ -23,22 +23,22 @@ export default function OpeningStocks() {
 
   return (
     <Row gutter={[0, 25]} className="m-8">
-      <PageTitle name="الارصدة الافتتاحية" />
-      <Modal
-        title="اضافة رصيد افتتاحي للمنتج"
-        open={open}
-        onOk={handleOk}
-        footer={null}
-        confirmLoading={confirmLoading}
-        onCancel={handleCancel}
-        destroyOnClose={true}
-        width="90%"
-      >
-        <OpeningStockForm setRefresh={setRefresh} />
-      </Modal>
+        <PageTitle name="أضافة مخزن" />
+        <Modal
+          title="أضافة مخزن"
+          open={open}
+          onOk={handleOk}
+          footer={null}
+          confirmLoading={confirmLoading}
+          onCancel={handleCancel}
+          destroyOnClose={true}
+          width="90%"
+        >
+          <StockForm setRefresh={setRefresh} />
+        </Modal>
       <Col span="24" className="isolate">
         <TableController
-          addButtonText="اضافة رصيد افتتاحي"
+          addButtonText="أضافة مخزن"
           addButtonAction={showModal}
           searchButtonAction={() => enterSearchMode()}
           setSearch={setSearch}
@@ -47,12 +47,11 @@ export default function OpeningStocks() {
           exitSearchMode={exitSearchMode}
           defaultValue="name"
           options={[
-            { label: "اسم الصنف", value: "name" },
-            { label: "كود الصنف", value: "barcode" },
-            { label: "المخزن", value: "stock_id" },
+            { label: "اسم المخزن", value: "name" },
+            { label: "اسم المسؤول", value: "employee_id" },
           ]}
         />
-        <OpeningStocksTable
+        <StocksTable
           searchMode={searchMode}
           search={search}
           attribute={attribute}

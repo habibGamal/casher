@@ -107,8 +107,19 @@ export default abstract class Model {
 
         return await Model.selectQuery(sql);
     }
-    static async chunck(cols: string[], rate: number, currentPage: number, where?: string, orderBy?: string) {
+    static async chunk(cols: string[], rate: number, currentPage: number, where?: string, orderBy?: string) {
         let sql = `SELECT ${cols.join(', ')} FROM ${this.getTableName()}`;
+        if (where)
+            sql += ` WHERE ${where}`;
+        if (orderBy)
+            sql += ` ORDER BY ${orderBy}`;
+        sql += ` LIMIT ${rate} OFFSET ${rate * (currentPage - 1)}`;
+        return await Model.selectQuery(sql);
+    }
+    static async chunkWithJoin(cols: string[], rate: number, currentPage: number, joinSelect :string[],joinStatment: string, where?: string, orderBy?: string) {
+        let select = `SELECT ${cols.map(col => this.getTableName()+ '.' + col).join(', ')}`
+        select = select + ',' + joinSelect.join(', ');
+        let sql = `${select} FROM ${this.getTableName()} ${joinStatment}`;
         if (where)
             sql += ` WHERE ${where}`;
         if (orderBy)

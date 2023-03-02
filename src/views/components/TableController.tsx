@@ -31,7 +31,7 @@ export default function TableController({
   exitSearchMode,
 }: TableComponentProps) {
   return (
-    <div className="grid grid-cols-5 2xl:grid-cols-6 gap-6">
+    <div className="grid grid-cols-5 2xl:grid-cols-6 gap-6 mb-6">
       <Input placeholder="بحث" onChange={(e) => setSearch(e.target.value)} />
       {options && (
         <Select

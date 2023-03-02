@@ -10,6 +10,7 @@ import ProductService from "../../../app/services/ProductService";
 import useTablePagination from "../../../hooks/useTablePagination";
 import useWhileTyping from "../../../hooks/useWhileTyping";
 import { QueryResult } from "tauri-plugin-sql-api";
+import ProductGroupService from "../../../app/services/ProductGroupService";
 
 interface ProductsInGroupTableProps {
   searchMode: boolean;
@@ -60,11 +61,12 @@ const ProductsInGroupTable = ({
 
   const fetchData = async (search?: string) => {
     setLoading(true);
-    const { products, count } = await ProductService.chunk(
-      tableParams,
-      sortDB(),
-      search
-    );
+    const { products, count } =
+      await ProductGroupService.getProductsInProductGroup(
+        tableParams,
+        sortDB(),
+        search
+      );
     setData(products);
     setTotal(count);
     setLoading(false);
